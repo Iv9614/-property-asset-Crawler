@@ -3,17 +3,16 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import os 
 import time  
-import cx_Oracle
-   
+import zipfile
+
 
 class Crawler():
     def __init__(self , target_web) :
         self.target_web  = target_web
       
+
     def get_web(self , options):
-        
         # webdriver 操作
-        
         driver =webdriver.Chrome(options=options  ,executable_path= os.path.abspath(r'./chromedriver.exe'))
         time.sleep(1)
         driver .get(self.target_web)
@@ -22,6 +21,17 @@ class Crawler():
         driver.find_element_by_xpath(r'//*[@id="historySeason_id"]/option[12]').click()
         driver.find_element_by_xpath(r'//*[@id="downloadBtnId"]').click()
         time.sleep(1)
+        self.unzip_file()
+
+
+    # 指定解壓縮檔案至指定的路徑下
+    def unzip_file (self):
+        files = zipfile.ZipFile(r'D:\xxx\download\lvr_landcsv.zip')      # 指定解壓縮檔案 
+        zipfile_list = ['a_lvr_land_a.csv','b_lvr_land_a.csv', 'e_lvr_land_a.csv' ,'f_lvr_land_a.csv' ,'h_lvr_land_a.csv']
+        for zipfiles in zipfile_list :
+            files.extract(zipfiles, r'D:\xxx\crawler_file')    
+        files.close()
+
 
 if __name__== '__main__':
     options = Options()
@@ -31,7 +41,7 @@ if __name__== '__main__':
     options.add_argument('--user-agent=%s' % user_agent)
     options.add_argument('--window-size=1920x1080') 
     target_web = r'https://plvr.land.moi.gov.tw/DownloadOpenData'
+    
     print('crawler start ')
-    #程式開始處
     Crawler(target_web).get_web(options)
     print('crawler done ')
